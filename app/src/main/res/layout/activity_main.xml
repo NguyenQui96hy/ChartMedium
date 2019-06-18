@@ -4,14 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:gravity="center"
     android:background="#FFFFFF"
+    android:gravity="center"
+
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.example.customviewchart.customview.SpeedView
+    <com.example.chartmightysat.MightySatChart
         android:id="@+id/speedView"
-        android:layout_width="180dp"
-        android:layout_height="180dp" />
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        app:color_content_chart="#FF5722"
+        app:color_padding_chart="#E2E2E2"
+        app:name_chart="Beats/ min"
+        app:sv_speedTextColor="#CF1010"
+        app:sv_textColor="#929292"
+        app:sv_indicatorColor="#CF1010"
+        app:sv_unitTextColor="#FF5722"
+        app:width_padding_chart="20" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:onClick="onClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:onClick="onClick2" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:onClick="onClick3" />
+
 
 </LinearLayout>

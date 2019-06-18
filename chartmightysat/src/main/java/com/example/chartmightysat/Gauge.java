@@ -1,4 +1,4 @@
-package com.example.customviewchart.customview;
+package com.example.chartmightysat;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -19,10 +19,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
-import com.example.customviewchart.R;
-
 import java.util.Locale;
-import java.util.Random;
 
 public abstract class Gauge extends View {
 
@@ -96,7 +93,7 @@ public abstract class Gauge extends View {
     /** Number expresses the Deceleration, between (0, 1] */
     private float decelerate = .1f;
 
-    private Position speedTextPosition =Position.BOTTOM_CENTER;
+    private Position speedTextPosition = Position.BOTTOM_CENTER;
     /** space between unitText and speedText */
     private float unitSpeedInterval = dpTOpx(1);
     private float speedTextPadding = dpTOpx(20f);

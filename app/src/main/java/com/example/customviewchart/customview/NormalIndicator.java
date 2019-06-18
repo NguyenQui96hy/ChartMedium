@@ -37,12 +37,11 @@ public class NormalIndicator extends Indicator<NormalIndicator> {
     @Override
     protected void updateIndicator() {
         indicatorPath.reset();
-        indicatorPath.moveTo(getCenterX(), getPadding());
+        indicatorPath.moveTo(getCenterX(), getPadding()+70);
         bottomY = getViewSize()*1f/13f + getPadding();
-        indicatorPath.lineTo(getCenterX() - getIndicatorWidth(), bottomY);
-        indicatorPath.lineTo(getCenterX() + getIndicatorWidth(), bottomY);
-
-
+        indicatorPath.lineTo(getCenterX() - getIndicatorWidth(), bottomY+50);
+        indicatorPath.lineTo(getCenterX() + getIndicatorWidth(), bottomY+50);
+        indicatorPaint.setColor(getIndicatorColor());
     }
 
     @Override

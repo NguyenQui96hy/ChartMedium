@@ -1,19 +1,19 @@
-package com.example.customviewchart.customview;
+package com.example.chartmightysat;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import com.example.customviewchart.R;
-
-public class SpeedView extends Speedometer {
+public class MightySatChart extends Speedometer {
 
     private Path markPath = new Path();
     private Paint
@@ -24,17 +24,21 @@ public class SpeedView extends Speedometer {
     private RectF positionRect = new RectF();
     private String nameChart;
     private Integer iconChart;
-    private float chartBackGroundWidth;
     private int chartBackGroundColor;
     private int colorContentChart;
     private float mediumPositionStart;
     private float mediumPositionEnd;
+    private ValueAnimator mAnimator;
+    private int colorPaddingChart;
+    private float widthPaddingChart;
+    private float paddingChart = 50;
 
-    public SpeedView(Context context, AttributeSet attrs) {
+
+    public MightySatChart(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SpeedView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MightySatChart(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
         initAttributeSet(context, attrs);
@@ -61,7 +65,13 @@ public class SpeedView extends Speedometer {
         if (attrs == null) {
             return;
         }
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.SpeedView, 0, 0);
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.MightySatChart, 0, 0);
+        nameChart = a.getString(R.styleable.MightySatChart_name_chart);
+        colorPaddingChart = a.getColor(R.styleable.MightySatChart_color_padding_chart, Color.WHITE);
+        colorContentChart =a.getColor(R.styleable.MightySatChart_color_content_chart,Color.WHITE);
+        widthPaddingChart = a.getFloat(R.styleable.MightySatChart_width_padding_chart,0);
+
+
         a.recycle();
     }
 
@@ -74,8 +84,8 @@ public class SpeedView extends Speedometer {
 
     private void initDraw() {
         markPaint.setColor(getColorContentChart());
-        chartBackGroundPaint.setStrokeWidth(getChartBackGroundWidth());
-        distanceMeasurePaint.setStrokeWidth(getChartBackGroundWidth() * .2f);
+        chartBackGroundPaint.setStrokeWidth(getWidthPaddingChart());
+        distanceMeasurePaint.setStrokeWidth(getWidthPaddingChart() * .2f);
     }
 
     @Override
@@ -87,49 +97,19 @@ public class SpeedView extends Speedometer {
         drawTextCentered(canvas);
 
         drawNotes(canvas);
+        drawLimit(canvas);
     }
 
     @Override
     protected void updateBackgroundBitmap() {
         Canvas c = createBackgroundBitmapCanvas();
         initDraw();
-        float markH = getViewSizePa()/28f;
-        markPath.reset();
-
-
-
-        float risk = getChartBackGroundWidth() * .5f + getPadding();
-        chartMeasureRect.set(risk, risk, getSize() - risk, getSize() - risk);
-        positionRect.set(risk, risk , getSize() - risk, getSize() - risk );
-
-        float positionStart = getStartDegree() + (270 * getMediumPositionStart());
-        float positionEnd = (getEndDegree() - getStartDegree()) * (getMediumPositionEnd() - getMediumPositionStart());
-        chartBackGroundPaint.setColor(getChartBackGroundColor());
+        float risk = getWidthPaddingChart() * .5f + getPadding();
+        chartMeasureRect.set(risk+paddingChart, risk+paddingChart, getSize() - risk-paddingChart, getSize() - risk-paddingChart);
+        positionRect.set(risk, risk, getSize() - risk, getSize() - risk);
+        chartBackGroundPaint.setColor(getColorPaddingChart());
         c.drawArc(chartMeasureRect, getStartDegree(), getEndDegree() - getStartDegree(), false, chartBackGroundPaint);
-        distanceMeasurePaint.setColor(getColorContentChart());
-        c.drawArc(chartMeasureRect, positionStart
-                , positionEnd, false, distanceMeasurePaint);
-//         c.drawArc(positionRect,positionStart,2,false,distanceMeasurePaint);
-//        c.drawArc(positionRect, positionStart + positionEnd, 9, false, distanceMeasurePaint);
-//
-//
-
-
         c.save();
-        //c.rotate(90f + getStartDegree(), getSize() * .5f, getSize() * .5f);
-//        float everyDegree = (getEndDegree() - getStartDegree()) * .111f;
-//        for (float i = getStartDegree(); i < getEndDegree()-(2f*everyDegree); i+=everyDegree) {
-//            c.rotate(everyDegree, getSize() *.5f, getSize() *.5f);
-//            c.drawPath(markPath, markPaint);
-//        }
-
-        markPath.moveTo(getSize() *.5f, getPadding());
-        markPath.lineTo(getSize() *.5f, markH + getPadding());
-        markPaint.setStrokeWidth(markH/3f);
-        c.rotate(90f + positionStart, getSize() *.5f, getSize() *.5f);
-        c.drawPath(markPath, markPaint);
-        c.rotate(positionEnd, getSize() *.5f, getSize() *.5f);
-        c.drawPath(markPath, markPaint);
         c.restore();
         if (getTickNumber() > 0)
             drawTicks(c);
@@ -137,18 +117,6 @@ public class SpeedView extends Speedometer {
             drawDefMinMaxSpeedPosition(c);
     }
 
-
-    /**
-     * change the color of the center circle (if exist),
-     * <b>this option is not available for all Speedometers</b>.
-     *
-     * @param centerCircleColor new color.
-     */
-    public void setCenterCircleColor(int centerCircleColor) {
-        if (!isAttachedToWindow())
-            return;
-        invalidate();
-    }
 
 
     private void drawTextCentered(Canvas canvas) {
@@ -173,6 +141,31 @@ public class SpeedView extends Speedometer {
         }
     }
 
+    public void drawLimit(Canvas c) {
+        float positionStart = getMediumPositionStart() / getMaxSpeed();
+        float positionEnd = (getMediumPositionEnd() - getMediumPositionStart()) / getMaxSpeed();
+        float angleStart = getStartDegree() + (270 * positionStart);
+        float angleEnd = (getEndDegree() - getStartDegree()) * positionEnd;
+        float markH = getViewSizePa() / 28f;
+        markPath.reset();
+        distanceMeasurePaint.setColor(getColorContentChart());
+        c.drawArc(chartMeasureRect, angleStart
+                , angleEnd, false, distanceMeasurePaint);
+        markPath.moveTo(getSize() * .5f, getPadding()+paddingChart);
+        markPath.lineTo(getSize() * .5f, markH + getPadding()+paddingChart);
+        markPaint.setStrokeWidth(markH / 3f);
+
+        c.rotate(90f + angleStart, getSize() * .5f, getSize() * .5f);
+        c.drawPath(markPath, markPaint);
+        c.drawText((int)getMediumPositionStart()+"",getSize()*.5f,markH+paddingChart*.5f,textPaint);
+        c.rotate(angleEnd, getSize() * .5f, getSize() * .5f);
+        c.drawPath(markPath, markPaint);
+        c.drawText((int)getMediumPositionEnd()+"",getSize()*.5f  ,markH+paddingChart*.5f ,textPaint);
+        c.save();
+//        c.restore();
+
+    }
+
 
     public Integer getIconChart() {
         return iconChart;
@@ -188,14 +181,6 @@ public class SpeedView extends Speedometer {
 
     public void setNameChart(String nameChart) {
         this.nameChart = nameChart;
-    }
-
-    public float getChartBackGroundWidth() {
-        return chartBackGroundWidth;
-    }
-
-    public void setChartBackGroundWidth(float chartBackGroundWidth) {
-        this.chartBackGroundWidth = chartBackGroundWidth;
     }
 
     public int getChartBackGroundColor() {
@@ -220,6 +205,9 @@ public class SpeedView extends Speedometer {
 
     public void setMediumPositionStart(float mediumPositionStart) {
         this.mediumPositionStart = mediumPositionStart;
+        if (!isAttachedToWindow())
+            return;
+        invalidate();
     }
 
     public float getMediumPositionEnd() {
@@ -228,5 +216,24 @@ public class SpeedView extends Speedometer {
 
     public void setMediumPositionEnd(float mediumPositionEnd) {
         this.mediumPositionEnd = mediumPositionEnd;
+        if (!isAttachedToWindow())
+            return;
+        invalidate();
+    }
+
+
+    public int getColorPaddingChart() {
+        return colorPaddingChart;
+    }
+
+    public void setColorPaddingChart(int colorPaddingChart) {
+        this.colorPaddingChart = colorPaddingChart;
+    }
+    public float getWidthPaddingChart() {
+        return widthPaddingChart;
+    }
+
+    public void setWidthPaddingChart(float widthPaddingChart) {
+        this.widthPaddingChart = widthPaddingChart;
     }
 }

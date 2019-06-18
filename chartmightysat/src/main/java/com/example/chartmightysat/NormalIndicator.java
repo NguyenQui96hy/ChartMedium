@@ -1,33 +1,28 @@
-package com.example.customviewchart.customview;
+package com.example.chartmightysat;
 
 import android.content.Context;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Path;
 
-public class LineIndicator extends Indicator<LineIndicator> {
+public class NormalIndicator extends Indicator<NormalIndicator> {
 
     private Path indicatorPath = new Path();
-    public static final float LINE = 1f
-            , HALF_LINE = .5f
-            , QUARTER_LINE = .25f;
-    private float mode;
+    private float bottomY;
 
-    public LineIndicator(Context context, float mode) {
+    public NormalIndicator(Context context) {
         super(context);
-        this.mode = mode;
         updateIndicator();
     }
 
     @Override
     protected float getDefaultIndicatorWidth() {
-        return dpTOpx(8f);
+        return dpTOpx(12f);
     }
 
     @Override
     public float getBottom() {
-        return getCenterY() * mode;
+        return bottomY;
     }
 
     @Override
@@ -41,11 +36,10 @@ public class LineIndicator extends Indicator<LineIndicator> {
     @Override
     protected void updateIndicator() {
         indicatorPath.reset();
-        indicatorPath.moveTo(getCenterX(), getPadding());
-        indicatorPath.lineTo(getCenterX(), getCenterY() * mode);
-
-        indicatorPaint.setStyle(Paint.Style.STROKE);
-        indicatorPaint.setStrokeWidth(getIndicatorWidth());
+        indicatorPath.moveTo(getCenterX(), getPadding()+70);
+        bottomY = getViewSize()*1f/13f + getPadding();
+        indicatorPath.lineTo(getCenterX() - getIndicatorWidth(), bottomY+50);
+        indicatorPath.lineTo(getCenterX() + getIndicatorWidth(), bottomY+50);
         indicatorPaint.setColor(getIndicatorColor());
     }
 
